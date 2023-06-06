@@ -1,6 +1,10 @@
 package com.example.repospect.DataModel
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+
+@Entity
 data class Repo(
     val branches_url: String, // branches of the repo
     val clone_url: String, // clone link
@@ -15,6 +19,8 @@ data class Repo(
     val git_commits_url: String, // see all commits
     val has_issues: Boolean, // for checking if repo has issues
     val html_url: String, // actual github url
+    @PrimaryKey(autoGenerate = true)
+    val pid: Int, //primary key for database
     val id: Int, //primary key
     val issues_url: String, //for issue in each repo
     val name: String,
