@@ -1,5 +1,6 @@
 package com.example.repospect.API
 
+import com.example.repospect.DataModel.Repo
 import com.example.repospect.DataModel.Repositories
 import retrofit2.Response
 import retrofit2.http.GET
@@ -18,6 +19,6 @@ interface GithubAPI {
     suspend fun getRepoUsingOwnerNameAndRepoName(
         @Path("owner") owner: String,
         @Path("repo") repo: String
-    )
+    ):Response<Repo>
 
 }

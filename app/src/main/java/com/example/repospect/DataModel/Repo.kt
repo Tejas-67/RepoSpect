@@ -25,10 +25,13 @@ data class Repo(
     val issues_url: String, //for issue in each repo
     val name: String,
     val open_issues_count: Int, //number of open issues
-    val owner: Owner, //Owner data object.
     val size: Int, //size of repo in KB
     val ssh_url: String,
-    val topics: List<String>, //topics related to this repo
+
+    //converters should be added for insering list<String>
+//    val topics: List<String>, //topics related to this repo
+
+
     val updated_at: String, //last updated at data
     val url: String,
     val visibility: String, // public or private.
