@@ -2,13 +2,70 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:gravity="center"
+    android:background="@color/primary_dark"
     android:layout_height="match_parent"
     tools:context=".Fragments.AddRepoFragment">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Repo Fragment" />
+
+    <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_height="match_parent">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            style="@style/MyTextInputLayout"
+            app:boxStrokeWidth="1dp"
+            android:elevation="32dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            app:boxBackgroundColor="@color/primary_light"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                android:id="@+id/owner_name_edit_text"
+                android:hint="Enter Owner Name"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                android:layout_height="match_parent"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="8dp"
+            style="@style/MyTextInputLayout"
+            app:boxStrokeWidth="1dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            app:boxBackgroundColor="@color/primary_light"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:id="@+id/repo_name_edit_text"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                android:hint="Enter Repository Name"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                android:layout_height="match_parent"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:backgroundTint="@color/button_blue"
+            app:cornerRadius="12dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="12dp"
+            android:textColor="@color/text_color_primary"
+            android:layout_height="wrap_content"
+            android:id="@+id/get_repo_btn"
+            android:layout_marginTop="8dp"
+            android:text="Get Repo" />
+    </LinearLayout>
+
 
 </LinearLayout>

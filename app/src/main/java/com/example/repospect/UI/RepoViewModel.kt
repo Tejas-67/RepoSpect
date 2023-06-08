@@ -16,7 +16,7 @@ class RepoViewModel(
     val repository: RepoRepository
 ) : ViewModel() {
 
-    private var allLocalRepo: LiveData<List<Repo>> = repository.allSavedRepo
+    var allLocalRepo: LiveData<List<Repo>> = repository.allSavedRepo
     val searchRepositoriesResponse: MutableLiveData<Resource<Repositories>> = MutableLiveData()
     val searchedRepo: MutableLiveData<Resource<Repo>> = MutableLiveData()
 

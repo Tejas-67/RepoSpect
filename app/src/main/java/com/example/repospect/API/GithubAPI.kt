@@ -21,4 +21,9 @@ interface GithubAPI {
         @Path("repo") repo: String
     ):Response<Repo>
 
+    @GET("repos/{owner}/{repo}/branches")
+    suspend fun getBranchesForRepo(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String
+    )
 }

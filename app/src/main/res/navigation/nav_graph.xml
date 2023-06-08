@@ -21,6 +21,22 @@
         tools:layout="@layout/fragment_add_repo" >
         <action
             android:id="@+id/action_addRepoFragment_to_homeFragment"
+            app:destination="@id/homeFragment"/>
+        <action
+            android:id="@+id/action_addRepoFragment_to_viewRepoFragment"
+            app:destination="@id/viewRepoFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/viewRepoFragment"
+        android:name="com.example.repospect.Fragments.ViewRepoFragment"
+        android:label="fragment_view_repo"
+        tools:layout="@layout/fragment_view_repo" >
+        <action
+            android:id="@+id/action_viewRepoFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_viewRepoFragment_to_addRepoFragment"
+            app:destination="@id/addRepoFragment" />
     </fragment>
 </navigation>
