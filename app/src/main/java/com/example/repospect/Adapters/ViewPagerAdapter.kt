@@ -6,21 +6,23 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.repospect.Fragments.BranchFragment
 import com.example.repospect.Fragments.IssueFragment
+import com.example.repospect.UI.RepoViewModel
 import com.google.android.material.tabs.TabLayout
 
 class ViewPagerAdapter(
     fragmentManger: FragmentManager,
-    lifecycle: Lifecycle
+    lifecycle: Lifecycle,
+    viewModel: RepoViewModel
 ) :
     FragmentStateAdapter(fragmentManger, lifecycle) {
-
+    val _VM=viewModel
     override fun getItemCount(): Int {
         return 2
     }
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> BranchFragment()
+            0 -> BranchFragment(_VM)
             1 -> IssueFragment()
             else -> Fragment()
         }

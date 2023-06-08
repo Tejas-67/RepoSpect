@@ -54,7 +54,7 @@ class ViewRepoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         showProgressBar()
         binding.toolbar.toolbarMainText.text="Repository Details"
-        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle)
+        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle, viewModel)
         binding.viewPager.adapter=adapter
 
         binding.saveBtn.setOnClickListener {

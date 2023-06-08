@@ -1,5 +1,6 @@
 package com.example.repospect.API
 
+import com.example.repospect.DataModel.Branches
 import com.example.repospect.DataModel.Repo
 import com.example.repospect.DataModel.Repositories
 import retrofit2.Response
@@ -21,9 +22,9 @@ interface GithubAPI {
         @Path("repo") repo: String
     ):Response<Repo>
 
-    @GET("repos/{owner}/{repo}/branches")
+    @GET("repos/{owner}/{name}/branches")
     suspend fun getBranchesForRepo(
         @Path("owner") owner: String,
-        @Path("repo") repo: String
-    )
+        @Path("name") name: String
+    ): Response<Branches>
 }

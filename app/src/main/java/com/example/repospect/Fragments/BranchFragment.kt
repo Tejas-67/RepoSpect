@@ -1,32 +1,33 @@
 package com.example.repospect.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.repospect.Activities.MainActivity
+import com.example.repospect.Adapters.BranchAdapter
+import com.example.repospect.DataModel.Resource
 import com.example.repospect.R
+import com.example.repospect.UI.RepoViewModel
+import com.example.repospect.databinding.FragmentBranchBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [BranchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class BranchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+class BranchFragment(val viewModel: RepoViewModel) : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private var _binding: FragmentBranchBinding? = null
+    private val binding get()=_binding!!
+    private lateinit var adapter: BranchAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -34,27 +35,53 @@ class BranchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_branch, container, false)
+        _binding= FragmentBranchBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BranchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            BranchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        showProgressBar()
+        setUpRecyclerView()
+        viewModel.searchedRepo.observe(viewLifecycleOwner, Observer {
+            when(it){
+                is Resource.Success -> {
+                    Log.w("RepoSpect", it.data!!.full_name)
+                    val temp = it.data!!.full_name.split('/')
+                    Log.w("RepoSpect", "${temp[0]} ${temp[1]}")
+                    viewModel.getAllBranches(temp[0], temp[1])
+                }
+                else -> showToast("Cannot fetch branches")
+            }
+        })
+        viewModel.allBranches.observe(viewLifecycleOwner, Observer {
+            when(it){
+                is Resource.Success -> {
+                    adapter.updateBranches(it.data!!)
+                    hideProgressBar()
+                }
+                is Resource.Loading-> showProgressBar()
+                is Resource.Error -> {
+                    showToast("Error Fetching Branches")
                 }
             }
+        })
+    }
+
+    private fun showProgressBar(){
+        binding.progressBar.visibility=View.VISIBLE
+        binding.branchFragmentLl.visibility=View.GONE
+    }
+    private fun hideProgressBar(){
+        binding.progressBar.visibility=View.GONE
+        binding.branchFragmentLl.visibility=View.VISIBLE
+    }
+    private fun showToast(message: String){
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+    private fun setUpRecyclerView(){
+        adapter= BranchAdapter()
+        binding.branchRcv.adapter=adapter
+        binding.branchRcv.layoutManager=LinearLayoutManager(requireContext())
     }
 }
