@@ -36,7 +36,7 @@ class ViewRepoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
+            currentRepo = it.getParcelable("currentRepo")!!
             param2 = it.getString(ARG_PARAM2)
         }
     }
@@ -52,9 +52,8 @@ class ViewRepoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showProgressBar()
-        binding.toolbar.toolbarMainText.text="Repository Details"
-        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle, viewModel)
+        updateUI()
+        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle, viewModel, currentRepo.full_name)
         binding.viewPager.adapter=adapter
 
         binding.saveBtn.setOnClickListener {
@@ -64,21 +63,6 @@ class ViewRepoFragment : Fragment() {
                 viewModel.addNewRepoToLocal(currentRepo)
             }
         }
-        viewModel.searchedRepo.observe(viewLifecycleOwner, Observer {
-            when(it){
-                is Resource.Success -> {
-                    currentRepo=it.data!!
-                    updateUI()
-                }
-                is Resource.Error -> {
-                    Toast.makeText(requireContext(), "Couldn't find any such repository!", Toast.LENGTH_SHORT).show()
-                    moveToHomeFragment()
-                }
-                is Resource.Loading -> showProgressBar()
-
-            }
-        })
-
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, pos ->
             when (pos) {
                 0 -> tab.text = "Branches"
@@ -98,8 +82,10 @@ class ViewRepoFragment : Fragment() {
 
     private fun updateUI(){
         hideProgressBar()
+        binding.toolbar.toolbarMainText.text="Repository Details"
         binding.repoName.text=currentRepo.full_name
         binding.descriptionRepo.text=currentRepo.description
+
     }
     private fun moveToHomeFragment(){
         val action=ViewRepoFragmentDirections.actionViewRepoFragmentToHomeFragment()

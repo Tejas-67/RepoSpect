@@ -12,17 +12,19 @@ import com.google.android.material.tabs.TabLayout
 class ViewPagerAdapter(
     fragmentManger: FragmentManager,
     lifecycle: Lifecycle,
-    viewModel: RepoViewModel
+    viewModel: RepoViewModel,
+    repoFullName: String,
 ) :
     FragmentStateAdapter(fragmentManger, lifecycle) {
     val _VM=viewModel
+    val fullName=repoFullName
     override fun getItemCount(): Int {
         return 2
     }
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> BranchFragment(_VM)
+            0 -> BranchFragment(_VM, fullName)
             1 -> IssueFragment()
             else -> Fragment()
         }

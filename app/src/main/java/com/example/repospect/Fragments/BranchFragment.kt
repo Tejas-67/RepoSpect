@@ -17,7 +17,7 @@ import com.example.repospect.UI.RepoViewModel
 import com.example.repospect.databinding.FragmentBranchBinding
 
 
-class BranchFragment(val viewModel: RepoViewModel) : Fragment() {
+class BranchFragment(val viewModel: RepoViewModel, val repoName: String) : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
@@ -43,24 +43,17 @@ class BranchFragment(val viewModel: RepoViewModel) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         showProgressBar()
         setUpRecyclerView()
-        viewModel.searchedRepo.observe(viewLifecycleOwner, Observer {
-            when(it){
-                is Resource.Success -> {
-                    Log.w("RepoSpect", it.data!!.full_name)
-                    val temp = it.data!!.full_name.split('/')
-                    Log.w("RepoSpect", "${temp[0]} ${temp[1]}")
-                    viewModel.getAllBranches(temp[0], temp[1])
-                }
-                else -> showToast("Cannot fetch branches")
-            }
-        })
+        val temp=repoName.split('/')
+        viewModel.getAllBranches(temp[0], temp[1])
         viewModel.allBranches.observe(viewLifecycleOwner, Observer {
             when(it){
-                is Resource.Success -> {
+                is Resource.Success->{
                     adapter.updateBranches(it.data!!)
                     hideProgressBar()
                 }
-                is Resource.Loading-> showProgressBar()
+                is Resource.Loading -> {
+                    showProgressBar()
+                }
                 is Resource.Error -> {
                     showToast("Error Fetching Branches")
                 }

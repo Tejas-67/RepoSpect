@@ -1,10 +1,14 @@
 package com.example.repospect.DataModel
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
 
 
 @Entity
+@Parcelize
 data class Repo(
     val branches_url: String, // branches of the repo
     val clone_url: String, // clone link
@@ -17,7 +21,6 @@ data class Repo(
     val forks_count: Int, //number of forks
     val full_name: String, // "owner/repo" name
     val git_commits_url: String, // see all commits
-    val has_issues: Boolean, // for checking if repo has issues
     val html_url: String, // actual github url
     @PrimaryKey(autoGenerate = true)
     val pid: Int, //primary key for database
@@ -35,4 +38,4 @@ data class Repo(
     val updated_at: String, //last updated at data
     val url: String,
     val visibility: String, // public or private.
-)
+) : Parcelable

@@ -26,6 +26,7 @@
             android:id="@+id/action_addRepoFragment_to_viewRepoFragment"
             app:destination="@id/viewRepoFragment" />
 
+
     </fragment>
     <fragment
         android:id="@+id/viewRepoFragment"
@@ -38,5 +39,8 @@
         <action
             android:id="@+id/action_viewRepoFragment_to_addRepoFragment"
             app:destination="@id/addRepoFragment" />
+        <argument
+            android:name="currentRepo"
+            app:argType="com.example.repospect.DataModel.Repo" />
     </fragment>
 </navigation>
