@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:backgroundTint="@color/primary_blue"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="10dp"
+    app:strokeColor="@color/text_color_secondary"
+    app:strokeWidth="1dp"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="12dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/issue_title"
+            android:textColor="@color/text_color_primary"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:text="Issue Title Goes Here"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/text_color_secondary"
+            android:text="#69 created at 9/06/2023"
+            android:id="@+id/issue_number_created_at"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

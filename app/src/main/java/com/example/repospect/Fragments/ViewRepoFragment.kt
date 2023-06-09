@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.repospect.Activities.MainActivity
@@ -39,6 +41,10 @@ class ViewRepoFragment : Fragment() {
             currentRepo = it.getParcelable("currentRepo")!!
             param2 = it.getString(ARG_PARAM2)
         }
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            moveToHomeFragment()
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onCreateView(
@@ -53,15 +59,11 @@ class ViewRepoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         updateUI()
-        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle, viewModel, currentRepo.full_name)
+        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle, viewModel, currentRepo.full_name!!)
         binding.viewPager.adapter=adapter
 
         binding.saveBtn.setOnClickListener {
-            if(isSaved) showToast("Already Saved!")
-            else {
-                isSaved=true
-                viewModel.addNewRepoToLocal(currentRepo)
-            }
+            viewModel.addNewRepoToLocal(currentRepo)
         }
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, pos ->
             when (pos) {
@@ -88,6 +90,7 @@ class ViewRepoFragment : Fragment() {
 
     }
     private fun moveToHomeFragment(){
+        viewModel.searchedRepo= MutableLiveData()
         val action=ViewRepoFragmentDirections.actionViewRepoFragmentToHomeFragment()
         findNavController().navigate(action)
     }

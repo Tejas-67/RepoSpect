@@ -25,7 +25,7 @@ class ViewPagerAdapter(
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> BranchFragment(_VM, fullName)
-            1 -> IssueFragment()
+            1 -> IssueFragment(_VM, fullName)
             else -> Fragment()
         }
     }

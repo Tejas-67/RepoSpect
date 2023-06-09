@@ -10,6 +10,9 @@ interface RepoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRepo(repo: Repo)
 
+    @Query("SELECT * FROM Repo WHERE pid = :elementId LIMIT 1")
+    suspend fun checkElement(elementId: Int): Repo
+
     @Delete
     suspend fun deleteRepo(repo: Repo)
 

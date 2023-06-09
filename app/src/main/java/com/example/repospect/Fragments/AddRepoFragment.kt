@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.repospect.Activities.MainActivity
@@ -57,7 +58,7 @@ class AddRepoFragment : Fragment() {
         viewModel.searchedRepo.observe(viewLifecycleOwner, Observer {
             when(it){
                 is Resource.Success -> {
-                    navigateToViewRepoFragment(it.data!!)
+                    if(!it.data!!.full_name.isNullOrEmpty()) navigateToViewRepoFragment(it.data!!)
                 }
                 is Resource.Loading -> {
                     showProgressBar()
@@ -71,6 +72,7 @@ class AddRepoFragment : Fragment() {
     }
 
     private fun navigateToHome(){
+        viewModel.searchedRepo= MutableLiveData()
         val action=AddRepoFragmentDirections.actionAddRepoFragmentToHomeFragment()
         findNavController().navigate(action)
     }

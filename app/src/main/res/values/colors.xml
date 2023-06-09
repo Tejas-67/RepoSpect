@@ -11,6 +11,7 @@
     <!--color scheme-->
     <color name="primary_light">#161b22</color>
     <color name="primary_dark">#010409</color>
+    <color name="primary_blue">#0d1117</color>
     <color name="button_blue">#1f6feb</color>
     <color name="primary_orange">#f85149</color>
     <color name="primary_green">#26a641</color>

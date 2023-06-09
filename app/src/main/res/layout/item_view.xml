@@ -2,7 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/primary_light"
+    android:backgroundTint="@color/primary_blue"
     app:cardCornerRadius="6dp"
     android:layout_margin="4dp"
     android:layout_width="match_parent">
@@ -17,7 +17,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:text="Repo Name Goes here"
-            android:textColor="@color/text_color_primary"
+            android:textColor="@color/text_color_secondary"
             android:textSize="18sp"
             android:id="@+id/repo_name_tv"/>
     </LinearLayout>

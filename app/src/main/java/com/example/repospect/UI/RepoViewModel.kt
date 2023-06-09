@@ -4,10 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.repospect.DataModel.Branches
-import com.example.repospect.DataModel.Repo
-import com.example.repospect.DataModel.Repositories
-import com.example.repospect.DataModel.Resource
+import com.example.repospect.DataModel.*
 import com.example.repospect.Repository.RepoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,12 +16,12 @@ class RepoViewModel(
 
     var allBranches: MutableLiveData<Resource<Branches>> = MutableLiveData()
     var allLocalRepo: LiveData<List<Repo>> = repository.allSavedRepo
-    val searchRepositoriesResponse: MutableLiveData<Resource<Repositories>> = MutableLiveData()
-    val searchedRepo: MutableLiveData<Resource<Repo>> = MutableLiveData()
-
+    var searchRepositoriesResponse: MutableLiveData<Resource<Repositories>> = MutableLiveData()
+    var searchedRepo: MutableLiveData<Resource<Repo>> = MutableLiveData()
+    var currentRepoIssues: MutableLiveData<Resource<Issues>> = MutableLiveData()
     fun addNewRepoToLocal(repo: Repo){
         viewModelScope.launch(Dispatchers.IO){
-            repository.addNewRepo(repo)
+            repository.checkIfElementExists(repo)
         }
     }
 
@@ -56,6 +53,14 @@ class RepoViewModel(
         }
     }
 
+    fun getIssues(owner: String, name: String){
+        viewModelScope.launch {
+            currentRepoIssues.postValue(Resource.Loading())
+            val response=repository.getIssues(owner, name)
+            currentRepoIssues.postValue(handleIssueResponse(response))
+        }
+    }
+
     fun handleBranchResponse(response: Response<Branches>): Resource<Branches>{
         if(response.isSuccessful) {
             response.body()?.let { resultResponse ->
@@ -65,6 +70,14 @@ class RepoViewModel(
         return Resource.Error(response.message())
     }
 
+    fun handleIssueResponse(response: Response<Issues>): Resource<Issues>{
+        if (response.isSuccessful){
+            response.body()?.let{
+                return Resource.Success(it)
+            }
+        }
+        return Resource.Error(response.message())
+    }
     fun handleResponse(response: Response<Repo>): Resource<Repo>{
         if(response.isSuccessful) {
             response.body()?.let { resultResponse ->
