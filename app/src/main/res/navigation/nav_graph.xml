@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addRepoFragment"
             app:destination="@id/addRepoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_viewRepoFragment"
+            app:destination="@id/viewRepoFragment" />
     </fragment>
     <fragment
         android:id="@+id/addRepoFragment"

@@ -11,6 +11,7 @@ import androidx.activity.addCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.repospect.Activities.MainActivity
 import com.example.repospect.Adapters.ViewPagerAdapter
 import com.example.repospect.DataModel.Repo
@@ -83,11 +84,13 @@ class ViewRepoFragment : Fragment() {
     }
 
     private fun updateUI(){
-        hideProgressBar()
+        Glide.with(requireContext()).load(currentRepo.owner.avatar_url).into(binding.userImage)
+        binding.languge.text=currentRepo.language
+        binding.createdAt.text=currentRepo.created_at
         binding.toolbar.toolbarMainText.text="Repository Details"
         binding.repoName.text=currentRepo.full_name
         binding.descriptionRepo.text=currentRepo.description
-
+        hideProgressBar()
     }
     private fun moveToHomeFragment(){
         viewModel.searchedRepo= MutableLiveData()

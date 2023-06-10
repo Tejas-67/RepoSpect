@@ -3,12 +3,15 @@ package com.example.repospect.Adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.repospect.DataModel.Repo
 import com.example.repospect.R
+import com.example.repospect.listeners.ItemClickListener
 
-class SavedRepoAdapter: RecyclerView.Adapter<SavedRepoAdapter.SavedRepoViewHolder>() {
+class SavedRepoAdapter(val listener: ItemClickListener): RecyclerView.Adapter<SavedRepoAdapter.SavedRepoViewHolder>() {
 
     private var list: List<Repo> = listOf()
     class SavedRepoViewHolder(val view: View): RecyclerView.ViewHolder(view){
@@ -16,6 +19,7 @@ class SavedRepoAdapter: RecyclerView.Adapter<SavedRepoAdapter.SavedRepoViewHolde
         val languageTv: TextView = view.findViewById(R.id.languge_tv)
         val createdAt: TextView = view.findViewById(R.id.created_at_tv)
         val desc: TextView = view.findViewById(R.id.desc)
+        val image: ImageView = view.findViewById(R.id.user_image_view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedRepoViewHolder {
@@ -27,6 +31,7 @@ class SavedRepoAdapter: RecyclerView.Adapter<SavedRepoAdapter.SavedRepoViewHolde
     }
 
     override fun onBindViewHolder(holder: SavedRepoViewHolder, position: Int) {
+        Glide.with(holder.itemView.context).load(list[position].owner.avatar_url).into(holder.image)
         holder.nameTv.text=list[position].full_name
         holder.languageTv.text=list[position].language
         holder.createdAt.text="Updated on ${list[position].updated_at!!.split('T')[0]}"
@@ -38,6 +43,8 @@ class SavedRepoAdapter: RecyclerView.Adapter<SavedRepoAdapter.SavedRepoViewHolde
             holder.desc.visibility=View.VISIBLE
             holder.desc.text=list[position].description
         }
+
+        holder.itemView.setOnClickListener { listener.onRepoClicked(it, list[position]) }
 
     }
 

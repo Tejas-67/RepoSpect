@@ -30,7 +30,7 @@ data class Repo(
     val open_issues_count: Int?, //number of open issues
     val size: Int?, //size of repo in KB
     val ssh_url: String?,
-
+    val owner: Owner,
     //converters should be added for insering list<String>
 //    val topics: List<String>, //topics related to this repo
 
