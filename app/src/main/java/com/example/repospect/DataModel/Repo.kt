@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
 
-@Entity
+@Entity(tableName = "Repo")
 @Parcelize
 data class Repo(
     val branches_url: String?, // branches of the repo

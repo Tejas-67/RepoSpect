@@ -18,7 +18,7 @@ class BranchAdapter: RecyclerView.Adapter<BranchAdapter.BranchViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BranchViewHolder {
-        return BranchViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_view, parent, false))
+        return BranchViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.branch_item_view, parent, false))
     }
 
     override fun getItemCount(): Int {

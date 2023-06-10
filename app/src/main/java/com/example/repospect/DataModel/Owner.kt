@@ -1,5 +1,13 @@
 package com.example.repospect.DataModel
 
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
+
+@Entity(tableName = "Owner", foreignKeys = [ForeignKey(entity = Repo::class, parentColumns = ["pid"], childColumns = ["id"])])
+@Parcelize
 data class Owner(
     val avatar_url: String,
     val events_url: String,
@@ -8,6 +16,7 @@ data class Owner(
     val gists_url: String,
     val gravatar_id: String,
     val html_url: String,
+    @PrimaryKey(autoGenerate = false)
     val id: Int,
     val login: String,
     val node_id: String,
@@ -19,4 +28,4 @@ data class Owner(
     val subscriptions_url: String,
     val type: String,
     val url: String
-)
+) : Parcelable
