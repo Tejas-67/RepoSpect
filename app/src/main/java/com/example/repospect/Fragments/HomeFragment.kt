@@ -72,4 +72,9 @@ class HomeFragment : Fragment(), ItemClickListener {
     override fun onBranchSelected(view: View, branchName: String) {
         //Not Required!
     }
+
+    override fun onDeleteButtonClicked(view: View, repo: Repo) {
+        viewModel.deleteRepoFromLocal(repo)
+        //animate view while deleting.
+    }
 }
