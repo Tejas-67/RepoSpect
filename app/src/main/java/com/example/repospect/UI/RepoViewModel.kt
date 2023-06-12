@@ -19,6 +19,7 @@ class RepoViewModel(
     var searchRepositoriesResponse: MutableLiveData<Resource<Repositories>> = MutableLiveData()
     var searchedRepo: MutableLiveData<Resource<Repo>> = MutableLiveData()
     var currentRepoIssues: MutableLiveData<Resource<Issues>> = MutableLiveData()
+    var currentRepoCommits: MutableLiveData<Resource<Commits>> = MutableLiveData()
     fun addNewRepoToLocal(repo: Repo){
         viewModelScope.launch(Dispatchers.IO){
             repository.checkIfElementExists(repo)
@@ -61,6 +62,22 @@ class RepoViewModel(
         }
     }
 
+    fun getCommits(owner: String, name: String, branch: String){
+        viewModelScope.launch{
+            currentRepoCommits.postValue(Resource.Loading())
+            val response= repository.getCommits(owner, name, branch)
+            currentRepoCommits.postValue(handleCommitsResponse(response))
+        }
+    }
+
+    fun handleCommitsResponse(response: Response<Commits>): Resource<Commits>{
+        if(response.isSuccessful){
+            response.body()?.let{
+                return Resource.Success(it)
+            }
+        }
+        return Resource.Error(response.message())
+    }
     fun handleBranchResponse(response: Response<Branches>): Resource<Branches>{
         if(response.isSuccessful) {
             response.body()?.let { resultResponse ->

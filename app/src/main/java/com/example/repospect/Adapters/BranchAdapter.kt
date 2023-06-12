@@ -1,5 +1,6 @@
 package com.example.repospect.Adapters
 
+import android.content.ClipData.Item
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.example.repospect.DataModel.Branch
 import com.example.repospect.R
+import com.example.repospect.listeners.ItemClickListener
 
-class BranchAdapter: RecyclerView.Adapter<BranchAdapter.BranchViewHolder>() {
+class BranchAdapter(val listener: ItemClickListener): RecyclerView.Adapter<BranchAdapter.BranchViewHolder>() {
 
     private var list: ArrayList<Branch> = arrayListOf()
 
@@ -28,6 +30,7 @@ class BranchAdapter: RecyclerView.Adapter<BranchAdapter.BranchViewHolder>() {
 
     override fun onBindViewHolder(holder: BranchViewHolder, position: Int) {
         holder.branchName.text=list[position].name
+        holder.itemView.setOnClickListener { listener.onBranchSelected(it, list[position].name) }
     }
 
     fun updateBranches(l: ArrayList<Branch>){

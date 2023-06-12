@@ -19,6 +19,7 @@ import com.example.repospect.DataModel.Resource
 import com.example.repospect.R
 import com.example.repospect.UI.RepoViewModel
 import com.example.repospect.databinding.FragmentViewRepoBinding
+import com.example.repospect.listeners.ItemClickListener
 import com.google.android.material.tabs.TabLayoutMediator
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,13 +27,11 @@ import com.google.android.material.tabs.TabLayoutMediator
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class ViewRepoFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
+class ViewRepoFragment : Fragment(), ItemClickListener {
 
     private var _binding: FragmentViewRepoBinding?=null
     private val binding get()=_binding!!
-
+    private lateinit var listener: ItemClickListener
     private lateinit var viewModel: RepoViewModel
     private var isSaved=false
     private lateinit var currentRepo: Repo
@@ -40,7 +39,6 @@ class ViewRepoFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             currentRepo = it.getParcelable("currentRepo")!!
-            param2 = it.getString(ARG_PARAM2)
         }
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             moveToHomeFragment()
@@ -52,6 +50,7 @@ class ViewRepoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        listener=this
         viewModel=(activity as MainActivity).viewModel
         _binding= FragmentViewRepoBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,7 +59,7 @@ class ViewRepoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         updateUI()
-        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle, viewModel, currentRepo.full_name!!)
+        val adapter=ViewPagerAdapter(parentFragmentManager, lifecycle, viewModel, currentRepo.full_name!!, listener)
         binding.viewPager.adapter=adapter
 
         binding.saveBtn.setOnClickListener {
@@ -100,6 +99,22 @@ class ViewRepoFragment : Fragment() {
 
     private fun showToast(message: String){
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onRepoClicked(view: View, repo: Repo) {
+    }
+
+    override fun onBranchSelected(view: View, branchName: String) {
+        getCommitsAndNavigate(branchName)
+    }
+
+    private fun getCommitsAndNavigate(name: String){
+        val action = ViewRepoFragmentDirections.actionViewRepoFragmentToCommitsFragment(name, currentRepo)
+        findNavController().navigate(action)
+    }
+
+    override fun onDeleteButtonClicked(view: View, repo: Repo) {
+
     }
 
 }

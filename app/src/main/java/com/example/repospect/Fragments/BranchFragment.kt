@@ -1,5 +1,6 @@
 package com.example.repospect.Fragments
 
+import android.content.ClipData.Item
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,9 +16,10 @@ import com.example.repospect.DataModel.Resource
 import com.example.repospect.R
 import com.example.repospect.UI.RepoViewModel
 import com.example.repospect.databinding.FragmentBranchBinding
+import com.example.repospect.listeners.ItemClickListener
 
 
-class BranchFragment(val viewModel: RepoViewModel, val repoName: String) : Fragment() {
+class BranchFragment(val viewModel: RepoViewModel, val repoName: String, val listener: ItemClickListener) : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
@@ -73,7 +75,7 @@ class BranchFragment(val viewModel: RepoViewModel, val repoName: String) : Fragm
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
     private fun setUpRecyclerView(){
-        adapter= BranchAdapter()
+        adapter= BranchAdapter(listener)
         binding.branchRcv.adapter=adapter
         binding.branchRcv.layoutManager=LinearLayoutManager(requireContext())
     }

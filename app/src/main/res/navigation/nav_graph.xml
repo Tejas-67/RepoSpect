@@ -45,5 +45,24 @@
         <argument
             android:name="currentRepo"
             app:argType="com.example.repospect.DataModel.Repo" />
+        <action
+            android:id="@+id/action_viewRepoFragment_to_commitsFragment"
+            app:destination="@id/commitsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/commitsFragment"
+        android:name="com.example.repospect.Fragments.CommitsFragment"
+        android:label="fragment_commits"
+        tools:layout="@layout/fragment_commits">
+        <action android:id="@+id/action_commitsFragment_to_ViewRepoFragment"
+            app:destination="@id/viewRepoFragment"/>
+        <argument
+            android:name="branchName"
+            app:argType="string" />
+        <argument
+            android:name="currentRepo"
+            app:argType="com.example.repospect.DataModel.Repo" />
+    </fragment>
+
+
 </navigation>

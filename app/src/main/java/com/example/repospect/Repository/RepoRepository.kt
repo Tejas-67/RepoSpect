@@ -2,10 +2,7 @@ package com.example.repospect.Repository
 
 import androidx.lifecycle.LiveData
 import com.example.repospect.API.RetrofitInstance
-import com.example.repospect.DataModel.Branches
-import com.example.repospect.DataModel.Issues
-import com.example.repospect.DataModel.Repo
-import com.example.repospect.DataModel.Repositories
+import com.example.repospect.DataModel.*
 import com.example.repospect.Database.RepoDao
 import com.example.repospect.Database.RepoDatabase
 import retrofit2.Response
@@ -39,5 +36,9 @@ class RepoRepository(val db: RepoDatabase) {
 
     suspend fun getBranches(owner: String, name: String): Response<Branches> {
         return RetrofitInstance.api.getBranchesForRepo(owner, name)
+    }
+
+    suspend fun getCommits(owner: String, name: String, branchName: String): Response<Commits>{
+        return RetrofitInstance.api.getCommits(owner, name, branchName)
     }
 }

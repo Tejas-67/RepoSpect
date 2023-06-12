@@ -1,9 +1,6 @@
 package com.example.repospect.API
 
-import com.example.repospect.DataModel.Branches
-import com.example.repospect.DataModel.Issues
-import com.example.repospect.DataModel.Repo
-import com.example.repospect.DataModel.Repositories
+import com.example.repospect.DataModel.*
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -34,4 +31,11 @@ interface GithubAPI {
         @Path("owner") owner: String,
         @Path("name") name: String
     ): Response<Issues>
+
+    @GET("repos/{owner}/{name}/commits?")
+    suspend fun getCommits(
+        @Path("owner") owner: String,
+        @Path("name") name: String,
+        @Query("sha") branch: String
+    ): Response<Commits>
 }
