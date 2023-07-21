@@ -1,5 +1,6 @@
 package com.example.repospect.Fragments
 
+import android.animation.Animator
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -46,13 +47,54 @@ class HomeFragment : Fragment(), ItemClickListener {
         setUpRecyclerView()
 
         viewModel.allLocalRepo.observe(viewLifecycleOwner, Observer {
-            updateRcv(it)
+            if(it.size==0){
+                showAnimation()
+            }
+            else{
+                hideAnimation()
+                updateRcv(it)
+            }
         })
         binding.addRepoBtn.setOnClickListener {
             navigateToAddRepoFragment()
         }
     }
 
+    private fun showAnimation(){
+        binding.apply {
+            savedRepoRcv.visibility=View.GONE
+            emptyListAnimation.visibility=View.VISIBLE
+            clickOnButton.visibility=View.VISIBLE
+            noRepo.visibility=View.VISIBLE
+            emptyListAnimation.playAnimation()
+            emptyListAnimation.addAnimatorListener(object: Animator.AnimatorListener{
+                override fun onAnimationStart(animation: Animator) {
+
+                }
+
+                override fun onAnimationEnd(animation: Animator) {
+                    emptyListAnimation.playAnimation()
+                }
+
+                override fun onAnimationCancel(animation: Animator) {
+
+                }
+
+                override fun onAnimationRepeat(animation: Animator) {
+
+                }
+
+            })
+        }
+    }
+    private fun hideAnimation(){
+        binding.apply {
+            savedRepoRcv.visibility=View.VISIBLE
+            emptyListAnimation.visibility=View.GONE
+            noRepo.visibility=View.GONE
+            clickOnButton.visibility=View.GONE
+        }
+    }
     private fun navigateToAddRepoFragment(){
         val action = HomeFragmentDirections.actionHomeFragmentToAddRepoFragment()
         findNavController().navigate(action)
