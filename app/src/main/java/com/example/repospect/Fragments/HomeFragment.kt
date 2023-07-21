@@ -49,9 +49,13 @@ class HomeFragment : Fragment(), ItemClickListener {
             updateRcv(it)
         })
         binding.addRepoBtn.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToAddRepoFragment()
-            findNavController().navigate(action)
+            navigateToAddRepoFragment()
         }
+    }
+
+    private fun navigateToAddRepoFragment(){
+        val action = HomeFragmentDirections.actionHomeFragmentToAddRepoFragment()
+        findNavController().navigate(action)
     }
 
     private fun setUpRecyclerView(){
