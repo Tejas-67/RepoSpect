@@ -7,8 +7,8 @@ A user-friendly native android application enabling users to add and manage thei
 * Search your favourite repo
 * Save you favourite repo
 # Screenshots
-![ScreenShot 1](./doc_assets/rs_1.png)
-![ScreenShot 2](./doc_assets/rs2.png)
-![ScreenShot 3](./doc_assets/rs3.png)
-![ScreenShot 4](./doc_assets/rs4.png)
-![ScreenShot 5](./doc_assets/rs5.png)
+![ScreenShot 1](../doc_assets/rs_1.png)
+![ScreenShot 2](../doc_assets/rs2.png)
+![ScreenShot 3](../doc_assets/rs3.png)
+![ScreenShot 4](../doc_assets/rs4.png)
+![ScreenShot 5](../doc_assets/rs5.png)
