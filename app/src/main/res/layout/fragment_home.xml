@@ -35,6 +35,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         android:fontFamily="@font/heading_font"
+        android:alpha=".5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintVertical_bias="1.0" />
@@ -45,6 +46,7 @@
         android:fontFamily="@font/heading_font"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:alpha=".5"
         android:text="Click on the button below to continue."
         android:textColor="@color/white"
         android:textSize="17sp"
