@@ -1,6 +1,6 @@
 # RepoSpect
 ## Overview
-A user-friendly native android application enabling users to add and manage their favorite GitHub repositories using Github API.
+A user-friendly native android application enabling users to add and manage their favorite repositories using Github API.
 ## Features
 * Track your favourite repositories
 * View commits, issues and branches
