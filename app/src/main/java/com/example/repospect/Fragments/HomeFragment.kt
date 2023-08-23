@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,11 +25,10 @@ class HomeFragment : Fragment(), ItemClickListener {
     private lateinit var listener: ItemClickListener
 
     private lateinit var viewModel: RepoViewModel
+    private var reposUpdated = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
+        viewModel=(activity as MainActivity).viewModel
     }
 
     override fun onCreateView(
@@ -36,17 +36,22 @@ class HomeFragment : Fragment(), ItemClickListener {
         savedInstanceState: Bundle?
     ): View? {
         listener=this
-        viewModel=(activity as MainActivity).viewModel
         _binding= FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+//        viewModel.startLocalDataUpdate()
         setUpRecyclerView()
+        viewModel.ifDataUpdated.observe(viewLifecycleOwner, Observer {
+            if(!it){
+                viewModel.startLocalDataUpdate()
+            }
+        })
 
         viewModel.allLocalRepo.observe(viewLifecycleOwner, Observer {
+
             if(it.size==0){
                 showAnimation()
             }
@@ -117,6 +122,9 @@ class HomeFragment : Fragment(), ItemClickListener {
 
     override fun onBranchSelected(view: View, branchName: String) {
         //Not Required!
+    }
+    private fun showToast(message: String){
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDeleteButtonClicked(view: View, repo: Repo) {

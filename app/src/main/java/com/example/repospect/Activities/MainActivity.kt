@@ -26,8 +26,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val repo = RepoRepository(RepoDatabase.getDatabase(this))
-        val VMPF = RepoViewModelProviderFactory(repo)
-        viewModel=ViewModelProvider(this, VMPF).get(RepoViewModel::class.java)
+        val VMPF = RepoViewModelProviderFactory(application, repo, this)
+        viewModel= ViewModelProvider(this, VMPF)[RepoViewModel::class.java]
 
         supportActionBar?.hide()
 

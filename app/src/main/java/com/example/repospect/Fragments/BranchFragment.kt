@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.repospect.Activities.MainActivity
@@ -61,6 +62,10 @@ class BranchFragment(val viewModel: RepoViewModel, val repoName: String, val lis
                 }
             }
         })
+    }
+
+    private fun showToast(){
+        Toast.makeText(requireContext(), "PLease connext to the internt", Toast.LENGTH_SHORT).show()
     }
 
     private fun showProgressBar(){

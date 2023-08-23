@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 
@@ -22,9 +23,9 @@ data class Repo(
     val full_name: String?, // "owner/repo" name
     val git_commits_url: String?, // see all commits
     val html_url: String?, // actual github url
-    @PrimaryKey(autoGenerate = true)
     val pid: Int, //primary key for database
-    val id: Int?, //primary key
+    @PrimaryKey(autoGenerate = false)
+    @SerializedName("id") val repo_id: Int?, //primary key from github
     val issues_url: String?, //for issue in each repo
     val name: String?,
     val open_issues_count: Int?, //number of open issues

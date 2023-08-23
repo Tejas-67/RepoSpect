@@ -4,9 +4,10 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
-@Entity(tableName = "Owner", foreignKeys = [ForeignKey(entity = Repo::class, parentColumns = ["pid"], childColumns = ["id"])])
+@Entity(tableName = "Owner", foreignKeys = [ForeignKey(entity = Repo::class, parentColumns = ["repo_id"], childColumns = ["owner_id"])])
 @Parcelize
 data class Owner(
     val avatar_url: String,
@@ -17,7 +18,7 @@ data class Owner(
     val gravatar_id: String,
     val html_url: String,
     @PrimaryKey(autoGenerate = false)
-    val id: Int,
+    @SerializedName("id") val owner_id: Int,
     val login: String,
     val node_id: String,
     val organizations_url: String,

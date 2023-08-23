@@ -1,13 +1,15 @@
 package com.example.repospect.Repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.repospect.API.RetrofitInstance
 import com.example.repospect.DataModel.*
 import com.example.repospect.Database.RepoDao
 import com.example.repospect.Database.RepoDatabase
+import kotlinx.coroutines.GlobalScope
 import retrofit2.Response
 
-class RepoRepository(val db: RepoDatabase) {
+class RepoRepository(db: RepoDatabase) {
     private val dao: RepoDao = db.getDao()
 
     var allSavedRepo: LiveData<List<Repo>> = dao.getAllRepos()
@@ -15,7 +17,27 @@ class RepoRepository(val db: RepoDatabase) {
     suspend fun addNewRepo(repo: Repo){
         dao.insertRepo(repo)
     }
-
+    suspend fun getUpdatedData(): List<Repo>{
+        Log.w("RepoSpectWorkManager", "getUpdatedData reached")
+        val newList: ArrayList<Repo> = arrayListOf()
+        val currentRepos = dao.getAllReposSync()
+        Log.w("RepoSpectWorkManager", "$currentRepos")
+        Log.w("RepospectWorkManager", "size of currentlist: ${currentRepos.size.toString()}")
+        for(repo in currentRepos){
+            val iden = repo.full_name!!.split('/')
+            val newRepo = getRepoWithOwnerAndRepoName(iden[0], iden[1])
+            if(newRepo.isSuccessful){
+                newList.add(newRepo.body()!!)
+                Log.w("RepospectWorkManager", newRepo.body()!!.description.toString())
+            }
+            else newList.add(repo)
+        }
+        Log.w("RepoSpectWorkManager", "size of newList: ${newList.size}")
+        return newList
+    }
+    suspend fun getRepoWithOwnerAndRepoName(owner: String, repoName: String): Response<Repo>{
+        return RetrofitInstance.api.getRepoUsingOwnerNameAndRepoName(owner, repoName)
+    }
     suspend fun deleteRepoFromLocal(repo: Repo){
         dao.deleteRepo(repo)
     }
@@ -30,15 +52,15 @@ class RepoRepository(val db: RepoDatabase) {
         return RetrofitInstance.api.searchRepo(key)
     }
 
-    suspend fun getRepoWithOwnerAndRepoName(owner: String, repoName: String): Response<Repo>{
-        return RetrofitInstance.api.getRepoUsingOwnerNameAndRepoName(owner, repoName)
-    }
-
     suspend fun getBranches(owner: String, name: String): Response<Branches> {
         return RetrofitInstance.api.getBranchesForRepo(owner, name)
     }
 
     suspend fun getCommits(owner: String, name: String, branchName: String): Response<Commits>{
         return RetrofitInstance.api.getCommits(owner, name, branchName)
+    }
+
+    suspend fun updateAllRepos(list: List<Repo>){
+        dao.updateAllRepos(list)
     }
 }

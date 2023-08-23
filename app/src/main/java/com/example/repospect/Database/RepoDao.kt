@@ -19,4 +19,10 @@ interface RepoDao {
     @Query("SELECT * FROM Repo ORDER BY pid ASC")
     fun getAllRepos(): LiveData<List<Repo>>
 
+    @Update
+    fun updateAllRepos(list: List<Repo>)
+
+    @Query("SELECT * FROM Repo")
+    fun getAllReposSync(): List<Repo>
+
 }
