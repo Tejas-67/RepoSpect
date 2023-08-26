@@ -1,7 +1,11 @@
 package com.example.repospect.Fragments
 
 import android.animation.Animator
+import android.content.res.Resources
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,9 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.repospect.Activities.MainActivity
 import com.example.repospect.Adapters.SavedRepoAdapter
 import com.example.repospect.DataModel.Repo
+import com.example.repospect.R
 import com.example.repospect.UI.RepoViewModel
 import com.example.repospect.databinding.FragmentHomeBinding
 import com.example.repospect.listeners.ItemClickListener
+import kotlinx.coroutines.delay
 
 class HomeFragment : Fragment(), ItemClickListener {
 
@@ -44,12 +50,11 @@ class HomeFragment : Fragment(), ItemClickListener {
         super.onViewCreated(view, savedInstanceState)
 //        viewModel.startLocalDataUpdate()
         setUpRecyclerView()
-        viewModel.ifDataUpdated.observe(viewLifecycleOwner, Observer {
-            if(!it){
-                viewModel.startLocalDataUpdate()
-            }
-        })
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.swipeRefreshLayout.isRefreshing=false
+            fetchData()
+        }
         viewModel.allLocalRepo.observe(viewLifecycleOwner, Observer {
 
             if(it.size==0){
@@ -65,9 +70,53 @@ class HomeFragment : Fragment(), ItemClickListener {
         }
     }
 
+    private fun fetchData() {
+        showRefreshAnimation()
+        Handler(Looper.getMainLooper()).postDelayed({
+            viewModel.startLocalDataUpdate()
+            viewModel.ifDataUpdated.observe(viewLifecycleOwner, Observer{
+                if(it){
+                    hideRefreshAnimation()
+                }
+            })
+        }, 1500)
+        viewModel.ifDataUpdated.postValue(false)
+    }
+
+    private fun hideRefreshAnimation() {
+        binding.refreshAnimation.visibility=View.GONE
+        binding.savedRepoRcv.visibility=View.VISIBLE
+    }
+
+    private fun showRefreshAnimation() {
+        binding.savedRepoRcv.visibility=View.GONE
+        binding.refreshAnimation.visibility=View.VISIBLE
+
+        binding.refreshAnimation.playAnimation()
+        binding.refreshAnimation.addAnimatorListener(object: Animator.AnimatorListener{
+            override fun onAnimationStart(animation: Animator) {
+
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                binding.refreshAnimation.playAnimation()
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+
+            }
+
+        })
+    }
+
     private fun showAnimation(){
         binding.apply {
             savedRepoRcv.visibility=View.GONE
+            swipeRefreshLayout.visibility=View.GONE
             emptyListAnimation.visibility=View.VISIBLE
             clickOnButton.visibility=View.VISIBLE
             noRepo.visibility=View.VISIBLE
@@ -94,6 +143,7 @@ class HomeFragment : Fragment(), ItemClickListener {
     }
     private fun hideAnimation(){
         binding.apply {
+            swipeRefreshLayout.visibility=View.VISIBLE
             savedRepoRcv.visibility=View.VISIBLE
             emptyListAnimation.visibility=View.GONE
             noRepo.visibility=View.GONE

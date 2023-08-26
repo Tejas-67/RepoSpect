@@ -37,8 +37,10 @@ class RepoViewModel(
                 Log.w("RepoSpectWorkManager", "localdataupdatesuccessfull")
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateRequest.id)
                     .removeObserver(workInfoObserver)
+                ifDataUpdated.postValue(true)
             }
         }
+        ifDataUpdated.postValue(true)
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateRequest.id)
             .observeForever(workInfoObserver)
     }
@@ -49,6 +51,7 @@ class RepoViewModel(
     var searchedRepo: MutableLiveData<Resource<Repo>> = MutableLiveData()
     var currentRepoIssues: MutableLiveData<Resource<Issues>> = MutableLiveData()
     var currentRepoCommits: MutableLiveData<Resource<Commits>> = MutableLiveData()
+
     fun addNewRepoToLocal(repo: Repo){
         viewModelScope.launch(Dispatchers.IO){
             repository.addNewRepo(repo)

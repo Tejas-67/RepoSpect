@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <!--color scheme-->
+    <color name="colorPrimary">@color/primary_dark</color>
     <color name="primary_light">#161b22</color>
     <color name="primary_dark">#010409</color>
     <color name="primary_blue">#0d1117</color>
@@ -19,4 +20,5 @@
     <color name="text_color_secondary">#c9d1d9</color>
     <color name="text_color_primary">#f0f6fc</color>
     <color name="primary_green_text">#39d353</color>
+    <color name="colorTransparent">#00FFFFFF</color>
 </resources>
