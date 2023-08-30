@@ -7,7 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
@@ -15,6 +14,7 @@ import androidx.work.WorkManager
 import com.example.repospect.DataModel.*
 import com.example.repospect.Repository.RepoRepository
 import com.example.repospect.WorkManager.LocalDataUpdateWorker
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -25,8 +25,10 @@ class RepoViewModel(
     private val context: Context
 ) : AndroidViewModel(application) {
 
+    private val firebase = FirebaseFirestore.getInstance()
     private lateinit var workInfoObserver: Observer<WorkInfo>
     var allLocalRepo: LiveData<List<Repo>> = repository.allSavedRepo
+
     fun startLocalDataUpdate(){
         Log.w("RepoSpectWorkManager", "localdataupdatestarts")
         val updateRequest = OneTimeWorkRequestBuilder<LocalDataUpdateWorker>().build()
@@ -44,6 +46,7 @@ class RepoViewModel(
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateRequest.id)
             .observeForever(workInfoObserver)
     }
+    var currentUser: MutableLiveData<Resource<UserData>> = MutableLiveData()
     var ifDataUpdated: MutableLiveData<Boolean> = MutableLiveData(false)
     var allBranches: MutableLiveData<Resource<Branches>> = MutableLiveData()
 
@@ -87,6 +90,16 @@ class RepoViewModel(
         }
     }
 
+
+
+    fun handleLoginResponse(response: Response<UserData>): Resource<UserData>{
+        if(response.isSuccessful){
+            response.body()?.let{
+                return Resource.Success(it)
+            }
+        }
+        return Resource.Error(response.message())
+    }
     fun getCommits(owner: String, name: String, branch: String){
         viewModelScope.launch{
             currentRepoCommits.postValue(Resource.Loading())

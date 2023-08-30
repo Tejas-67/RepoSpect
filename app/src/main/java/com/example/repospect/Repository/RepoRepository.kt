@@ -2,11 +2,11 @@ package com.example.repospect.Repository
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import com.example.repospect.API.RetrofitInstance
+import com.example.repospect.API.AuthenticationRetrofitInstance
+import com.example.repospect.API.GithubRetrofitInstance
 import com.example.repospect.DataModel.*
 import com.example.repospect.Database.RepoDao
 import com.example.repospect.Database.RepoDatabase
-import kotlinx.coroutines.GlobalScope
 import retrofit2.Response
 
 class RepoRepository(db: RepoDatabase) {
@@ -36,28 +36,24 @@ class RepoRepository(db: RepoDatabase) {
         return newList
     }
     suspend fun getRepoWithOwnerAndRepoName(owner: String, repoName: String): Response<Repo>{
-        return RetrofitInstance.api.getRepoUsingOwnerNameAndRepoName(owner, repoName)
+        return GithubRetrofitInstance.api.getRepoUsingOwnerNameAndRepoName(owner, repoName)
     }
     suspend fun deleteRepoFromLocal(repo: Repo){
         dao.deleteRepo(repo)
     }
-
-    suspend fun checkIfElementExists(repo: Repo){
-        if(dao.checkElement(repo.pid)==null) addNewRepo(repo)
-    }
     suspend fun getIssues(owner: String, name: String): Response<Issues>{
-        return RetrofitInstance.api.getIssues(owner, name)
+        return GithubRetrofitInstance.api.getIssues(owner, name)
     }
     suspend fun searchForKeyword(key: String): Response<Repositories>{
-        return RetrofitInstance.api.searchRepo(key)
+        return GithubRetrofitInstance.api.searchRepo(key)
     }
 
     suspend fun getBranches(owner: String, name: String): Response<Branches> {
-        return RetrofitInstance.api.getBranchesForRepo(owner, name)
+        return GithubRetrofitInstance.api.getBranchesForRepo(owner, name)
     }
 
     suspend fun getCommits(owner: String, name: String, branchName: String): Response<Commits>{
-        return RetrofitInstance.api.getCommits(owner, name, branchName)
+        return GithubRetrofitInstance.api.getCommits(owner, name, branchName)
     }
 
     suspend fun updateAllRepos(list: List<Repo>){
