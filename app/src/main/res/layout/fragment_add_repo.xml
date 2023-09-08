@@ -8,10 +8,24 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.AddRepoFragment">
 
-    <include layout="@layout/toolbar" android:id="@+id/toolbar"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="12sp"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Repo"
+            android:fontFamily="@font/heading_font"
+            android:textSize="18sp"
+            android:textColor="@color/text_color_secondary"/>
+    </LinearLayout>
 
     <ProgressBar
         android:layout_width="wrap_content"

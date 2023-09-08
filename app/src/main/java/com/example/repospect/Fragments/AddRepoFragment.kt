@@ -1,6 +1,7 @@
 package com.example.repospect.Fragments
 
 import android.animation.Animator
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.lifecycle.MutableLiveData
@@ -70,29 +72,11 @@ class AddRepoFragment : Fragment() {
                 showToast("Please enter Complete Details")
             }
             else{
-                viewModel.searchRepoWithOwnerAndName(binding.ownerNameEditText.text.toString(), binding.repoNameEditText.text.toString())
+                if(viewModel.hasInternetConnection()) viewModel.searchRepoWithOwnerAndName(binding.ownerNameEditText.text.toString(), binding.repoNameEditText.text.toString())
+                else showNoInternetPopup()
             }
+
         }
-
-        binding.searchAnimationView.playAnimation()
-        binding.searchAnimationView.addAnimatorListener(object : Animator.AnimatorListener{
-            override fun onAnimationStart(animation: Animator) {
-
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-                binding.searchAnimationView.playAnimation()
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-
-            }
-
-        })
 
         viewModel.searchedRepo.observe(viewLifecycleOwner, Observer {
             when(it){
@@ -108,6 +92,16 @@ class AddRepoFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun showNoInternetPopup() {
+        val view = layoutInflater.inflate(R.layout.no_internet_popup, null)
+        val cancelButton = view.findViewById<ImageButton>(R.id.cancel_popup_btn)
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.TransparentDialog).setView(view).create()
+        alertDialog.show()
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
     }
 
     private fun navigateToHome(){

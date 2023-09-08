@@ -1,10 +1,12 @@
 package com.example.repospect.Fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.lifecycle.Observer
@@ -56,8 +58,10 @@ class CommitsFragment() : Fragment() {
         val owner=temp[0]
         val repoName=temp[1]
         setUpRecyclerView()
-        viewModel.getCommits(owner, repoName, branchName)
-
+        if(viewModel.hasInternetConnection()) viewModel.getCommits(owner, repoName, branchName)
+        else {
+            showNoInternetPopup()
+        }
         viewModel.currentRepoCommits.observe(viewLifecycleOwner, Observer {
             when(it){
                 is Resource.Success->{
@@ -70,7 +74,15 @@ class CommitsFragment() : Fragment() {
             }
         })
     }
-
+    private fun showNoInternetPopup() {
+        val view = layoutInflater.inflate(R.layout.no_internet_popup, null)
+        val cancelButton = view.findViewById<ImageButton>(R.id.cancel_popup_btn)
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.TransparentDialog).setView(view).create()
+        alertDialog.show()
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
+    }
     private fun setUpRecyclerView(){
         adapter= CommitAdapter()
         binding.commitRcv.adapter=adapter

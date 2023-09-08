@@ -1,6 +1,7 @@
 package com.example.repospect.Fragments
 
 import android.animation.Animator
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -54,13 +56,48 @@ class HomeFragment : Fragment(), ItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        viewModel.startLocalDataUpdate()
-        auth=FirebaseAuth.getInstance()
-        firebase= FirebaseFirestore.getInstance()
-        setUpRecyclerView()
+        if(!viewModel.hasInternetConnection()) {
+            showNoInternetPopup()
+        }
+        else{
+            auth = FirebaseAuth.getInstance()
+            firebase = FirebaseFirestore.getInstance()
+            setUpRecyclerView()
+            loadUserDetails()
+        }
         binding.toolbar.search.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
         }
+        viewModel.currentUser.observe(viewLifecycleOwner, Observer{
+            when(it){
+                is Resource.Success -> updateUI(it.data!!)
+                is Resource.Error -> showSnackbar(it.message!!)
+                else -> {}
+            }
+        })
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            if(!viewModel.hasInternetConnection()) showNoInternetPopup()
+            else{
+                binding.swipeRefreshLayout.isRefreshing=false
+                fetchData()
+            }
+        }
+        viewModel.allLocalRepo.observe(viewLifecycleOwner, Observer {
+            if(it.size==0){
+                showAnimation()
+            }
+            else{
+                hideAnimation()
+                updateRcv(it)
+            }
+        })
+        binding.addRepoBtn.setOnClickListener {
+            navigateToAddRepoFragment()
+        }
+    }
+
+    private fun loadUserDetails() {
+        showSnackbar("Loading User Data")
         GlobalScope.launch{
             viewModel.currentUser.postValue(Resource.Loading())
             firebase.collection("users").document(auth.currentUser!!.email!!).get()
@@ -75,30 +112,15 @@ class HomeFragment : Fragment(), ItemClickListener {
                     }
                 }
         }
+    }
 
-        viewModel.currentUser.observe(viewLifecycleOwner, Observer{
-            when(it){
-                is Resource.Success -> updateUI(it.data!!)
-                is Resource.Error -> showSnackbar(it.message!!)
-                else -> showToast("Loading user data!")
-            }
-        })
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            binding.swipeRefreshLayout.isRefreshing=false
-            fetchData()
-        }
-        viewModel.allLocalRepo.observe(viewLifecycleOwner, Observer {
-
-            if(it.size==0){
-                showAnimation()
-            }
-            else{
-                hideAnimation()
-                updateRcv(it)
-            }
-        })
-        binding.addRepoBtn.setOnClickListener {
-            navigateToAddRepoFragment()
+    private fun showNoInternetPopup() {
+        val view = layoutInflater.inflate(R.layout.no_internet_popup, null)
+        val cancelButton = view.findViewById<ImageButton>(R.id.cancel_popup_btn)
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.TransparentDialog).setView(view).create()
+        alertDialog.show()
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
         }
     }
 
@@ -127,26 +149,7 @@ class HomeFragment : Fragment(), ItemClickListener {
     private fun showRefreshAnimation() {
         binding.savedRepoRcv.visibility=View.GONE
         binding.refreshAnimation.visibility=View.VISIBLE
-
         binding.refreshAnimation.playAnimation()
-        binding.refreshAnimation.addAnimatorListener(object: Animator.AnimatorListener{
-            override fun onAnimationStart(animation: Animator) {
-
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-                binding.refreshAnimation.playAnimation()
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-
-            }
-
-        })
     }
 
     private fun showAnimation(){
@@ -157,24 +160,6 @@ class HomeFragment : Fragment(), ItemClickListener {
             clickOnButton.visibility=View.VISIBLE
             noRepo.visibility=View.VISIBLE
             emptyListAnimation.playAnimation()
-            emptyListAnimation.addAnimatorListener(object: Animator.AnimatorListener{
-                override fun onAnimationStart(animation: Animator) {
-
-                }
-
-                override fun onAnimationEnd(animation: Animator) {
-                    emptyListAnimation.playAnimation()
-                }
-
-                override fun onAnimationCancel(animation: Animator) {
-
-                }
-
-                override fun onAnimationRepeat(animation: Animator) {
-
-                }
-
-            })
         }
     }
     private fun hideAnimation(){

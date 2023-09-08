@@ -2,6 +2,10 @@ package com.example.repospect.UI
 
 import android.app.Application
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -55,7 +59,32 @@ class RepoViewModel(
             .observeForever(workInfoObserver)
     }
 
-
+    fun hasInternetConnection(): Boolean{
+        val connectivityManager = getApplication<Application>().getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
+            val activeNetwork = connectivityManager.activeNetwork?:return false
+            val capability = connectivityManager.getNetworkCapabilities(activeNetwork)?:return false
+            return when{
+                capability.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                capability.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                capability.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        }
+        else{
+            connectivityManager.activeNetworkInfo?.run{
+                return when(type){
+                    ConnectivityManager.TYPE_WIFI -> true
+                    ContactsContract.CommonDataKinds.Email.TYPE_MOBILE ->  true
+                    ConnectivityManager.TYPE_ETHERNET ->  true
+                    else -> false
+                }
+            }
+        }
+        return false
+    }
     fun addNewRepoToLocal(repo: Repo){
         viewModelScope.launch(Dispatchers.IO){
             repository.addNewRepo(repo)

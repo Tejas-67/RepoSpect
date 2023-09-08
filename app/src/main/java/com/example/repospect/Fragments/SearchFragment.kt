@@ -1,11 +1,13 @@
 package com.example.repospect.Fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
@@ -54,26 +56,52 @@ class SearchFragment : Fragment(), ItemClickListener {
             job?.cancel()
             job= GlobalScope.launch(Dispatchers.IO){
                 it?.let{
-                    if(it.toString().isNotEmpty()) viewModel.searchRepositories(it.toString())
+                    if(it.toString().isNotEmpty()) {
+                        if(viewModel.hasInternetConnection()) viewModel.searchRepositories(it.toString())
+                        else showNoInternetPopup()
+                    }
                 }
             }
         }
         viewModel.searchRepositoriesResponse.observe(viewLifecycleOwner, Observer { resource ->
             when(resource){
                 is Resource.Loading -> {
-
+                    showAnim()
                 }
                 is Resource.Success -> {
+                    hideAnim()
                     resource?.data?.items?.let{
                         adapter.updateRcv(it)
                     }
                 }
                 is Resource.Error -> {
+                    hideAnim()
                     showToast("Search Failed: ${resource.message}")
                 }
             }
         })
     }
+
+    private fun showNoInternetPopup() {
+        val view = layoutInflater.inflate(R.layout.no_internet_popup, null)
+        val cancelButton = view.findViewById<ImageButton>(R.id.cancel_popup_btn)
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.TransparentDialog).setView(view).create()
+        alertDialog.show()
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
+    }
+
+
+    private fun hideAnim() {
+        binding.loadingAnim.visibility=View.GONE
+        binding.searchRcv.visibility=View.VISIBLE
+    }
+    private fun showAnim(){
+        binding.loadingAnim.visibility=View.VISIBLE
+        binding.searchRcv.visibility=View.GONE
+    }
+
     private fun showToast(message : String){
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }

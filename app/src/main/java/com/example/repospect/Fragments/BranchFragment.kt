@@ -1,5 +1,6 @@
 package com.example.repospect.Fragments
 
+import android.app.AlertDialog
 import android.content.ClipData.Item
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.Observer
@@ -46,8 +48,14 @@ class BranchFragment(val viewModel: RepoViewModel, val repoName: String, val lis
         super.onViewCreated(view, savedInstanceState)
         showProgressBar()
         setUpRecyclerView()
-        val temp=repoName.split('/')
-        viewModel.getAllBranches(temp[0], temp[1])
+        if(viewModel.hasInternetConnection()){
+            val temp=repoName.split('/')
+            viewModel.getAllBranches(temp[0], temp[1])
+        }
+        else {
+            hideProgressBar()
+            showNoInternetPopup()
+        }
         viewModel.allBranches.observe(viewLifecycleOwner, Observer {
             when(it){
                 is Resource.Success->{
@@ -62,6 +70,15 @@ class BranchFragment(val viewModel: RepoViewModel, val repoName: String, val lis
                 }
             }
         })
+    }
+    private fun showNoInternetPopup() {
+        val view = layoutInflater.inflate(R.layout.no_internet_popup, null)
+        val cancelButton = view.findViewById<ImageButton>(R.id.cancel_popup_btn)
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.TransparentDialog).setView(view).create()
+        alertDialog.show()
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
     }
 
     private fun showToast(message: String){

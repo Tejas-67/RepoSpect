@@ -1,6 +1,7 @@
 package com.example.repospect.Fragments
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,11 +10,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.navigation.fragment.findNavController
+import com.example.repospect.Activities.LoginActivity
 import com.example.repospect.Activities.MainActivity
 import com.example.repospect.DataModel.UserData
 import com.example.repospect.R
+import com.example.repospect.UI.RepoViewModel
 import com.example.repospect.databinding.FragmentSignUpBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -26,6 +30,7 @@ class SignUpFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
     private val PICK_IMAGE_REQUEST = 1
+    private lateinit var viewModel: RepoViewModel
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
     private var userImageUrl: Uri = Uri.parse("")
@@ -44,13 +49,15 @@ class SignUpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel=(activity as LoginActivity).viewModel
         auth=FirebaseAuth.getInstance()
         firestore=FirebaseFirestore.getInstance()
         binding.loginTxt.setOnClickListener {
             findNavController().navigate(R.id.action_signUpFragment_to_loginFragment)
         }
         binding.signupBtn.setOnClickListener {
-            prepareSignUp()
+            if(viewModel.hasInternetConnection()) prepareSignUp()
+            else showNoInternetPopup()
         }
         binding.editBtn.setOnClickListener {
             openGallery()
@@ -107,6 +114,15 @@ class SignUpFragment : Fragment() {
             }
     }
 
+    private fun showNoInternetPopup() {
+        val view = layoutInflater.inflate(R.layout.no_internet_popup, null)
+        val cancelButton = view.findViewById<ImageButton>(R.id.cancel_popup_btn)
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.TransparentDialog).setView(view).create()
+        alertDialog.show()
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
+    }
     private fun navigateToMainActivity() {
         val intent = Intent(requireContext(), MainActivity::class.java)
         startActivity(intent)
