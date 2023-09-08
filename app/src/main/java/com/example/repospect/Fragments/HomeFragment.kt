@@ -1,11 +1,10 @@
 package com.example.repospect.Fragments
 
 import android.animation.Animator
-import android.content.res.Resources
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,24 +13,31 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.repospect.Activities.MainActivity
-import com.example.repospect.Adapters.SavedRepoAdapter
+import com.example.repospect.Adapters.RepoAdapter
 import com.example.repospect.DataModel.Repo
+import com.example.repospect.DataModel.Resource
+import com.example.repospect.DataModel.UserData
 import com.example.repospect.R
 import com.example.repospect.UI.RepoViewModel
 import com.example.repospect.databinding.FragmentHomeBinding
 import com.example.repospect.listeners.ItemClickListener
-import kotlinx.coroutines.delay
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(), ItemClickListener {
 
     private var _binding : FragmentHomeBinding? =null
     private val binding get()=_binding!!
-    private lateinit var adapter: SavedRepoAdapter
+    private lateinit var adapter: RepoAdapter
     private lateinit var listener: ItemClickListener
-
+    private lateinit var auth: FirebaseAuth
+    private lateinit var firebase: FirebaseFirestore
     private lateinit var viewModel: RepoViewModel
-    private var reposUpdated = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel=(activity as MainActivity).viewModel
@@ -49,8 +55,34 @@ class HomeFragment : Fragment(), ItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        viewModel.startLocalDataUpdate()
+        auth=FirebaseAuth.getInstance()
+        firebase= FirebaseFirestore.getInstance()
         setUpRecyclerView()
+        binding.toolbar.search.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+        }
+        GlobalScope.launch{
+            viewModel.currentUser.postValue(Resource.Loading())
+            firebase.collection("users").document(auth.currentUser!!.email!!).get()
+                .addOnSuccessListener {
+                    Log.w("AndroidRuntime", it.toString())
+                    val userObject = it.toObject(UserData::class.java)
+                    if(userObject==null) {
+                        viewModel.currentUser.postValue(Resource.Error("Error fetching user details!"))
+                    }
+                    else{
+                        viewModel.currentUser.postValue(Resource.Success(userObject))
+                    }
+                }
+        }
 
+        viewModel.currentUser.observe(viewLifecycleOwner, Observer{
+            when(it){
+                is Resource.Success -> updateUI(it.data!!)
+                is Resource.Error -> showSnackbar(it.message!!)
+                else -> showToast("Loading user data!")
+            }
+        })
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing=false
             fetchData()
@@ -68,6 +100,10 @@ class HomeFragment : Fragment(), ItemClickListener {
         binding.addRepoBtn.setOnClickListener {
             navigateToAddRepoFragment()
         }
+    }
+
+    private fun updateUI(user: UserData) {
+        Glide.with(requireContext()).load(user.image).into(binding.toolbar.profilePic).onLoadFailed(resources.getDrawable(R.drawable.no_profile_logo))
     }
 
     private fun fetchData() {
@@ -156,7 +192,7 @@ class HomeFragment : Fragment(), ItemClickListener {
     }
 
     private fun setUpRecyclerView(){
-        adapter=SavedRepoAdapter(listener)
+        adapter=RepoAdapter(listener)
         binding.savedRepoRcv.adapter=adapter
         binding.savedRepoRcv.layoutManager=LinearLayoutManager(requireContext())
     }
@@ -168,6 +204,9 @@ class HomeFragment : Fragment(), ItemClickListener {
     override fun onRepoClicked(view: View, repo: Repo) {
         val action = HomeFragmentDirections.actionHomeFragmentToViewRepoFragment(repo)
         findNavController().navigate(action)
+    }
+    private fun showSnackbar(message: String){
+        activity?.let { Snackbar.make(requireContext(), it.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show() }
     }
 
     override fun onBranchSelected(view: View, branchName: String) {

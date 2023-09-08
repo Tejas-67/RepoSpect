@@ -29,7 +29,6 @@ class SignUpFragment : Fragment() {
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
     private var userImageUrl: Uri = Uri.parse("")
-    private val db = FirebaseFirestore.getInstance()
     private lateinit var firestore: FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

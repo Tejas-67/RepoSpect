@@ -1,8 +1,8 @@
 package com.example.repospect.DataModel
 
 data class UserData(
-    val name: String,
-    val email: String,
-    val password: String,
-    val image: String
+    var name: String="",
+    var email: String="",
+    var password: String="",
+    var image: String = ""
 )

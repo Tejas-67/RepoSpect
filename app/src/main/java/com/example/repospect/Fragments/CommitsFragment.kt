@@ -55,7 +55,6 @@ class CommitsFragment() : Fragment() {
         val temp=currentRepo.full_name!!.split('/')
         val owner=temp[0]
         val repoName=temp[1]
-        binding.toolbar.toolbarMainText.text="${repoName} Commits"
         setUpRecyclerView()
         viewModel.getCommits(owner, repoName, branchName)
 

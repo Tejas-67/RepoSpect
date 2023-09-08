@@ -1,8 +1,8 @@
 package com.example.repospect.Adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
@@ -12,7 +12,7 @@ import com.example.repospect.DataModel.Repo
 import com.example.repospect.R
 import com.example.repospect.listeners.ItemClickListener
 
-class SavedRepoAdapter(val listener: ItemClickListener): RecyclerView.Adapter<SavedRepoAdapter.SavedRepoViewHolder>() {
+class RepoAdapter(val listener: ItemClickListener): RecyclerView.Adapter<RepoAdapter.SavedRepoViewHolder>() {
 
     private var list: List<Repo> = listOf()
     inner class SavedRepoViewHolder(view: View): RecyclerView.ViewHolder(view){
@@ -69,6 +69,7 @@ class SavedRepoAdapter(val listener: ItemClickListener): RecyclerView.Adapter<Sa
     fun updateRcv(l: List<Repo>){
         list=l
         notifyDataSetChanged()
+
     }
 
 }

@@ -64,8 +64,8 @@ class BranchFragment(val viewModel: RepoViewModel, val repoName: String, val lis
         })
     }
 
-    private fun showToast(){
-        Toast.makeText(requireContext(), "PLease connext to the internt", Toast.LENGTH_SHORT).show()
+    private fun showToast(message: String){
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun showProgressBar(){
@@ -75,9 +75,6 @@ class BranchFragment(val viewModel: RepoViewModel, val repoName: String, val lis
     private fun hideProgressBar(){
         binding.progressBar.visibility=View.GONE
         binding.branchFragmentLl.visibility=View.VISIBLE
-    }
-    private fun showToast(message: String){
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
     private fun setUpRecyclerView(){
         adapter= BranchAdapter(listener)

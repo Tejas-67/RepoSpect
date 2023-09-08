@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_viewRepoFragment"
             app:destination="@id/viewRepoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/addRepoFragment"
@@ -48,6 +51,9 @@
         <action
             android:id="@+id/action_viewRepoFragment_to_commitsFragment"
             app:destination="@id/commitsFragment" />
+        <action
+            android:id="@+id/action_viewRepoFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/commitsFragment"
@@ -62,6 +68,18 @@
         <argument
             android:name="currentRepo"
             app:argType="com.example.repospect.DataModel.Repo" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.repospect.Fragments.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_viewRepoFragment"
+            app:destination="@id/viewRepoFragment" />
     </fragment>
 
 

@@ -18,34 +18,29 @@ class RepoRepository(db: RepoDatabase) {
         dao.insertRepo(repo)
     }
     suspend fun getUpdatedData(): List<Repo>{
-        Log.w("RepoSpectWorkManager", "getUpdatedData reached")
         val newList: ArrayList<Repo> = arrayListOf()
         val currentRepos = dao.getAllReposSync()
-        Log.w("RepoSpectWorkManager", "$currentRepos")
-        Log.w("RepospectWorkManager", "size of currentlist: ${currentRepos.size.toString()}")
         for(repo in currentRepos){
             val iden = repo.full_name!!.split('/')
             val newRepo = getRepoWithOwnerAndRepoName(iden[0], iden[1])
             if(newRepo.isSuccessful){
                 newList.add(newRepo.body()!!)
-                Log.w("RepospectWorkManager", newRepo.body()!!.description.toString())
             }
             else newList.add(repo)
         }
-        Log.w("RepoSpectWorkManager", "size of newList: ${newList.size}")
         return newList
     }
     suspend fun getRepoWithOwnerAndRepoName(owner: String, repoName: String): Response<Repo>{
         return GithubRetrofitInstance.api.getRepoUsingOwnerNameAndRepoName(owner, repoName)
+    }
+    suspend fun searchRepository(searchText: String): Response<SearchResponse> {
+        return GithubRetrofitInstance.api.searchRepo(searchText)
     }
     suspend fun deleteRepoFromLocal(repo: Repo){
         dao.deleteRepo(repo)
     }
     suspend fun getIssues(owner: String, name: String): Response<Issues>{
         return GithubRetrofitInstance.api.getIssues(owner, name)
-    }
-    suspend fun searchForKeyword(key: String): Response<Repositories>{
-        return GithubRetrofitInstance.api.searchRepo(key)
     }
 
     suspend fun getBranches(owner: String, name: String): Response<Branches> {

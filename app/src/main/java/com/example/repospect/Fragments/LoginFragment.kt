@@ -47,6 +47,7 @@ class LoginFragment : Fragment() {
         viewModel = (activity as LoginActivity).viewModel
         firebase=FirebaseFirestore.getInstance()
         auth=FirebaseAuth.getInstance()
+        checkUser()
         binding.signupText.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
@@ -56,9 +57,14 @@ class LoginFragment : Fragment() {
         }
     }
 
+    private fun checkUser() {
+        if(auth.currentUser!=null) navigateToMainActivity()
+    }
+
     private fun navigateToMainActivity() {
         val intent = Intent(activity, MainActivity::class.java)
         startActivity(intent)
+        activity?.finish()
     }
 
     private fun checkFields():Boolean {

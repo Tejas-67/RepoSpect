@@ -12,7 +12,7 @@ interface GithubAPI {
     suspend fun searchRepo(
         @Query("q")
         q: String
-    ): Response<Repositories>
+    ): Response<SearchResponse>
 
     @GET("repos/{owner}/{repo}")
     suspend fun getRepoUsingOwnerNameAndRepoName(

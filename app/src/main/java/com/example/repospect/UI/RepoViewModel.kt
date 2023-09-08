@@ -25,9 +25,17 @@ class RepoViewModel(
     private val context: Context
 ) : AndroidViewModel(application) {
 
-    private val firebase = FirebaseFirestore.getInstance()
     private lateinit var workInfoObserver: Observer<WorkInfo>
     var allLocalRepo: LiveData<List<Repo>> = repository.allSavedRepo
+    var currentUser: MutableLiveData<Resource<UserData>> = MutableLiveData()
+    var ifDataUpdated: MutableLiveData<Boolean> = MutableLiveData(false)
+    var allBranches: MutableLiveData<Resource<Branches>> = MutableLiveData()
+
+    var searchedRepo: MutableLiveData<Resource<Repo>> = MutableLiveData()
+    var currentRepoIssues: MutableLiveData<Resource<Issues>> = MutableLiveData()
+    var currentRepoCommits: MutableLiveData<Resource<Commits>> = MutableLiveData()
+
+    var searchRepositoriesResponse: MutableLiveData<Resource<SearchResponse>> = MutableLiveData()
 
     fun startLocalDataUpdate(){
         Log.w("RepoSpectWorkManager", "localdataupdatestarts")
@@ -46,14 +54,7 @@ class RepoViewModel(
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateRequest.id)
             .observeForever(workInfoObserver)
     }
-    var currentUser: MutableLiveData<Resource<UserData>> = MutableLiveData()
-    var ifDataUpdated: MutableLiveData<Boolean> = MutableLiveData(false)
-    var allBranches: MutableLiveData<Resource<Branches>> = MutableLiveData()
 
-    var searchRepositoriesResponse: MutableLiveData<Resource<Repositories>> = MutableLiveData()
-    var searchedRepo: MutableLiveData<Resource<Repo>> = MutableLiveData()
-    var currentRepoIssues: MutableLiveData<Resource<Issues>> = MutableLiveData()
-    var currentRepoCommits: MutableLiveData<Resource<Commits>> = MutableLiveData()
 
     fun addNewRepoToLocal(repo: Repo){
         viewModelScope.launch(Dispatchers.IO){
@@ -61,12 +62,24 @@ class RepoViewModel(
         }
     }
 
+    fun searchRepositories(searchText: String){
+        viewModelScope.launch(Dispatchers.IO){
+            searchRepositoriesResponse.postValue(Resource.Loading())
+            val response = repository.searchRepository(searchText)
+            searchRepositoriesResponse.postValue(handleSearchedRepositoriesResponse(response))
+        }
+    }
     fun deleteRepoFromLocal(repo: Repo){
         viewModelScope.launch(Dispatchers.IO){
             repository.deleteRepoFromLocal(repo)
         }
     }
-
+    private fun handleSearchedRepositoriesResponse(response: Response<SearchResponse>): Resource<SearchResponse>{
+        if(response.isSuccessful && response.body()!=null){
+            return Resource.Success(response.body()!!)
+        }
+        return Resource.Error("Error connecting to server")
+    }
     fun searchRepoWithOwnerAndName(owner: String, name: String){
         viewModelScope.launch {
             searchedRepo.postValue(Resource.Loading())

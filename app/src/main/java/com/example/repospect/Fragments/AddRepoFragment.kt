@@ -64,7 +64,6 @@ class AddRepoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.toolbarMainText.text="Search Repo"
         hideProgressBar()
         binding.getRepoBtn.setOnClickListener {
             if(binding.repoNameEditText.text.isNullOrEmpty() || binding.ownerNameEditText.text.isNullOrEmpty()){

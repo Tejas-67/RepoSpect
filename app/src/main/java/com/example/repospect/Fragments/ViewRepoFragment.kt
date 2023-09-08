@@ -23,10 +23,6 @@ import com.example.repospect.databinding.FragmentViewRepoBinding
 import com.example.repospect.listeners.ItemClickListener
 import com.google.android.material.tabs.TabLayoutMediator
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class ViewRepoFragment : Fragment(), ItemClickListener {
 
@@ -64,7 +60,6 @@ class ViewRepoFragment : Fragment(), ItemClickListener {
         binding.viewPager.adapter=adapter
 
         binding.saveBtn.setOnClickListener {
-            Log.w("RepoSpect", "save button clicked for repo: ${currentRepo.name}")
             viewModel.addNewRepoToLocal(currentRepo)
         }
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, pos ->
@@ -88,7 +83,6 @@ class ViewRepoFragment : Fragment(), ItemClickListener {
         Glide.with(requireContext()).load(currentRepo.owner.avatar_url).into(binding.userImage)
         binding.languge.text=currentRepo.language
         binding.createdAt.text=currentRepo.created_at
-        binding.toolbar.toolbarMainText.text="Repository Details"
         binding.repoName.text=currentRepo.full_name
         binding.descriptionRepo.text=currentRepo.description
         hideProgressBar()
