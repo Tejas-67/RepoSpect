@@ -18,7 +18,6 @@ class GithubRetrofitInstance {
                 .client(client)
                 .build()
         }
-
         val api by lazy {
             retrofit.create(GithubAPI::class.java)
         }
