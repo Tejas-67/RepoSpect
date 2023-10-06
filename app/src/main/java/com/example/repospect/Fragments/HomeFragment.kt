@@ -94,6 +94,9 @@ class HomeFragment : Fragment(), ItemClickListener {
         binding.addRepoBtn.setOnClickListener {
             navigateToAddRepoFragment()
         }
+        binding.toolbar.profilePic.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_profileFragment)
+        }
     }
 
     private fun loadUserDetails() {
