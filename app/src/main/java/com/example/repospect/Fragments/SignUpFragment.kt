@@ -98,6 +98,7 @@ class SignUpFragment : Fragment() {
             }
             .addOnFailureListener {
                 showSnackbar("SignUp failed: $it")
+                Log.w("repospect", it.toString())
             }
     }
 

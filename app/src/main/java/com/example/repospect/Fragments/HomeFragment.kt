@@ -28,6 +28,7 @@ import com.example.repospect.listeners.ItemClickListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -128,7 +129,7 @@ class HomeFragment : Fragment(), ItemClickListener {
     }
 
     private fun updateUI(user: UserData) {
-        Glide.with(requireContext()).load(user.image).into(binding.toolbar.profilePic).onLoadFailed(resources.getDrawable(R.drawable.no_profile_logo))
+            Glide.with(requireContext()).load(user.image).into(binding.toolbar.profilePic)
     }
 
     private fun fetchData() {
