@@ -1,25 +1,22 @@
 package com.example.repospect.Fragments
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.view.Gravity
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.WindowManager
-import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -30,21 +27,25 @@ import com.example.repospect.DataModel.UserData
 import com.example.repospect.R
 import com.example.repospect.UI.RepoViewModel
 import com.example.repospect.databinding.FragmentProfileBinding
-import com.google.android.material.button.MaterialButton
-import com.google.android.play.core.integrity.e
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
+    private val storage = FirebaseStorage.getInstance()
+    private val storageRef = storage.reference
+
     private lateinit var viewModel: RepoViewModel
     private var _binding: FragmentProfileBinding? = null
     private val binding get()=_binding!!
     private lateinit var auth: FirebaseAuth
     private lateinit var firebase: FirebaseFirestore
     private var popupWindow: PopupWindow? = null
+    private val PICK_IMAGE_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +69,7 @@ class ProfileFragment : Fragment() {
                 is Resource.Success->{
                     binding.nameTv.text = it.data!!.name
                     binding.emailTv.text = it.data.email
+                    Glide.with(requireContext()).load(it.data!!.image).into(binding.userImage)
                 }
                 is Resource.Loading->{
                     binding.nameTv.text=""
@@ -84,8 +86,6 @@ class ProfileFragment : Fragment() {
             true-> {
                 auth=FirebaseAuth.getInstance()
                 firebase=FirebaseFirestore.getInstance()
-                updateUserDetails()
-
             }
             else->{
             }
@@ -101,6 +101,133 @@ class ProfileFragment : Fragment() {
         }
         binding.backBtn.setOnClickListener {
             findNavController().navigate(R.id.action_profileFragment_to_homeFragment)
+        }
+        binding.changePasswordLl.setOnClickListener {
+            showChangePasswordPopup()
+        }
+        binding.editImageBtn.setOnClickListener {
+            openGallery()
+        }
+    }
+
+    private fun openGallery() {
+        val intent = Intent()
+        intent.type = "image/*"
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.data != null) {
+            binding.userImage.setImageURI(data.data!!)
+            startImageUpdate(data.data!!)
+        }
+    }
+
+    private fun startImageUpdate(uri: Uri) {
+        val imageRef = storageRef.child("images/${uri.lastPathSegment}")
+        val uploadTask = imageRef.putFile(uri)
+
+        uploadTask.addOnSuccessListener {
+            imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                viewModel.currentUser.value?.data?.let{
+                    updateUserDetails(it.name, it.email, it.password, downloadUri.toString(), null)
+                }
+            }
+        }.addOnFailureListener {
+            Log.d("repospect", it.toString())
+            showSnackbar("Error: $it")
+        }
+    }
+
+    private fun showChangePasswordPopup(){
+        val popupView = LayoutInflater.from(requireContext()).inflate(R.layout.change_password_popup, null)
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setView(popupView)
+
+        val newPasswordEdtxt: EditText = popupView.findViewById(R.id.new_password_edtxt)
+        val newPasswordEdtxt2: EditText = popupView.findViewById(R.id.new_password_edtxt2)
+        val currentPassword : EditText = popupView.findViewById(R.id.curr_password_edtxt)
+        val cancelBtn: Button = popupView.findViewById(R.id.cancel_btn)
+        val submitBtn: Button = popupView.findViewById(R.id.change_password_button_popup)
+
+        val alertDialog = builder.create()
+        alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.setOnShowListener {
+            val windowParams = WindowManager.LayoutParams()
+            windowParams.copyFrom(alertDialog.window?.attributes)
+            windowParams.dimAmount = 1f
+            alertDialog.window?.attributes = windowParams
+        }
+        submitBtn.setOnClickListener {
+            if(newPasswordEdtxt.text.toString()!=newPasswordEdtxt2.text.toString()){
+                showSnackbar("Passwords don't match!")
+                newPasswordEdtxt.text.clear()
+                newPasswordEdtxt2.text.clear()
+            }
+            else{
+                if(currentPassword.text.toString()==viewModel.currentUser.value!!.data!!.password){
+                    changePassword(
+                        alertDialog,
+                        currentPassword.text.toString(),
+                        newPasswordEdtxt.text.toString()
+                    )
+                }
+                else{
+                    showSnackbar("Current password doesn't match!")
+                    currentPassword.text.clear()
+                }
+            }
+        }
+        cancelBtn.setOnClickListener {
+            alertDialog.dismiss()
+        }
+        alertDialog.show()
+    }
+
+    private fun changePassword(alertDialog: AlertDialog?, oldPassword: String, newPassword: String) {
+        val firebaseUser = auth.currentUser
+        if (firebaseUser != null && firebaseUser.email != null) {
+            val credential = EmailAuthProvider.getCredential(firebaseUser.email!!, oldPassword)
+            firebaseUser.reauthenticate(credential)
+                .addOnSuccessListener {
+                    firebaseUser.updatePassword(newPassword)
+                        .addOnSuccessListener {
+                            alertDialog?.dismiss()
+                            showSnackbar("Password changed!")
+                            viewModel.currentUser.value?.data?.let{
+                                updateUserDetails(it.name, it.email, newPassword, it.image, alertDialog)
+                            }
+                        }
+                        .addOnFailureListener {
+                            showSnackbar("Some error occured: $it")
+                        }
+                }
+                .addOnFailureListener {
+                    showSnackbar("Seems like something is wrong, try again in some time!")
+                }
+        }
+    }
+
+    private fun updateUserDetails(name: String, email: String, password: String, image: String, alertDialog: AlertDialog?) {
+        GlobalScope.launch{
+            firebase.collection("users").document(auth.currentUser!!.email!!).set(
+                hashMapOf(
+                    "name" to name,
+                    "email" to email,
+                    "password" to password,
+                    "image" to image
+                )
+            )
+                .addOnSuccessListener {
+                    updateCurrentUserInViewModel()
+                    alertDialog?.dismiss()
+                }
+                .addOnFailureListener {
+                    showSnackbar("Some error occurred: $it")
+                }
         }
     }
 
@@ -152,22 +279,9 @@ class ProfileFragment : Fragment() {
             Toast.makeText(requireContext(), "Please connect to the internet", Toast.LENGTH_SHORT).show()
         }
         else {
-            firebase.collection("users").document(auth.currentUser!!.email!!).set(
-                hashMapOf(
-                    "name" to newName,
-                    "email" to viewModel.currentUser.value!!.data!!.email,
-                    "password" to viewModel.currentUser.value!!.data!!.password,
-                    "image" to viewModel.currentUser.value?.data?.image
-                )
-            ).addOnSuccessListener {
-                alertDialog.dismiss()
-                Toast.makeText(requireContext(), "Name updated", Toast.LENGTH_SHORT).show()
-                updateCurrentUserInViewModel()
+            viewModel.currentUser.value?.data?.let{
+                updateUserDetails(newName, it.email, it.password, it.image, alertDialog)
             }
-                .addOnFailureListener {
-                    Toast.makeText(requireContext(), "Error occured: $it", Toast.LENGTH_SHORT)
-                        .show()
-                }
         }
     }
 
@@ -203,10 +317,8 @@ class ProfileFragment : Fragment() {
         )
         startActivity(intent)
     }
-
-    private fun updateUserDetails() {
-        Glide.with(requireContext())
-            .load(viewModel.currentUser.value?.data?.image)
-            .into(binding.userImage)
+    private fun showSnackbar(message: String){
+        activity?.let { Snackbar.make(requireContext(), it.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show() }
     }
+
 }
