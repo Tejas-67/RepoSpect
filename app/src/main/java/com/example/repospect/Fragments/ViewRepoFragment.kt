@@ -71,6 +71,9 @@ class ViewRepoFragment : Fragment(), ItemClickListener {
             }
         }.attach()
 
+        binding.backBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_viewRepoFragment_to_homeFragment)
+        }
     }
 
     private fun showNoInternetPopup() {

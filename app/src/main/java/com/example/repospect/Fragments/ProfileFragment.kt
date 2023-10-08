@@ -21,6 +21,7 @@ import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.repospect.Activities.LoginActivity
 import com.example.repospect.Activities.MainActivity
@@ -98,6 +99,9 @@ class ProfileFragment : Fragment() {
         binding.changeNameLl.setOnClickListener {
             showChangeNamePopup()
         }
+        binding.backBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_homeFragment)
+        }
     }
 
     private fun showChangeNamePopup(){
@@ -116,7 +120,7 @@ class ProfileFragment : Fragment() {
         alertDialog.setOnShowListener {
             val windowParams = WindowManager.LayoutParams()
             windowParams.copyFrom(alertDialog.window?.attributes)
-            windowParams.dimAmount = .9f
+            windowParams.dimAmount = 1f
             alertDialog.window?.attributes = windowParams
         }
         submitBtn.setOnClickListener {

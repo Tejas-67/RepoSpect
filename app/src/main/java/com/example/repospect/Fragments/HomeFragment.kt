@@ -44,6 +44,27 @@ class HomeFragment : Fragment(), ItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel=(activity as MainActivity).viewModel
+        if(!viewModel.hasInternetConnection()) {
+            showNoInternetPopup()
+        }
+        else{
+            auth = FirebaseAuth.getInstance()
+            firebase = FirebaseFirestore.getInstance()
+            viewModel.currentUser.value.let{
+                if(it==null){
+                    loadUserDetails()
+                }
+                else{
+                    when(it){
+                        is Resource.Success->{}
+                        is Resource.Error->{
+                            showSnackbar("Some error occurred while fetching user details")
+                        }
+                        else->{}
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -57,15 +78,7 @@ class HomeFragment : Fragment(), ItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(!viewModel.hasInternetConnection()) {
-            showNoInternetPopup()
-        }
-        else{
-            auth = FirebaseAuth.getInstance()
-            firebase = FirebaseFirestore.getInstance()
-            setUpRecyclerView()
-            loadUserDetails()
-        }
+        setUpRecyclerView()
         binding.toolbar.search.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
         }

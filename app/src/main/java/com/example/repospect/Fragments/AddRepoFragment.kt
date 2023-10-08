@@ -92,6 +92,9 @@ class AddRepoFragment : Fragment() {
                 }
             }
         })
+        binding.toolbar.setOnClickListener {
+            findNavController().navigate(R.id.action_addRepoFragment_to_homeFragment)
+        }
     }
 
     private fun showNoInternetPopup() {

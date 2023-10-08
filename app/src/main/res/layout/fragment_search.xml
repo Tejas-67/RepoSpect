@@ -7,17 +7,41 @@
     android:layout_height="match_parent"
     android:background="@color/primary_dark"
     tools:context=".Fragments.SearchFragment">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_marginStart="20sp"
+        android:layout_marginEnd="20sp"
+        android:layout_marginTop="20sp"
+        android:background="?attr/selectableItemBackground"
+        android:id="@+id/back_btn"
+        android:hapticFeedbackEnabled="true"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_gravity="start"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:src="@drawable/ic_back"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textSize="16sp"
+            android:textColor="@color/button_blue"/>
+    </LinearLayout>
     <EditText
         android:layout_width="match_parent"
-        android:layout_marginStart="12sp"
-        android:layout_marginEnd="12sp"
+        android:layout_marginStart="20sp"
+        android:layout_marginEnd="20sp"
         android:textCursorDrawable="@drawable/cursor"
         android:layout_marginTop="24sp"
         android:id="@+id/search_txt"
         android:paddingStart="12sp"
         android:textColor="@color/text_color_secondary"
         android:hint="/search"
-        android:fontFamily="@font/heading_font"
         android:textSize="13sp"
         android:textColorHint="@color/text_color_secondary"
         android:background="@drawable/search_bar_background"
