@@ -52,6 +52,40 @@ class RepoViewModel(
     var currentRepoIssues: MutableLiveData<Resource<Issues>> = MutableLiveData()
     var currentRepoCommits: MutableLiveData<Resource<Commits>> = MutableLiveData()
 
+    var currentUser: MutableLiveData<Resource<User>> = MutableLiveData()
+
+
+    fun handleAuthResponse(response: Response<User>): Resource<User>{
+        if(response.isSuccessful){
+            response.body()?.let{
+                currentUser.postValue(Resource.Success(it))
+            }
+        }
+        return Resource.Error(response.message())
+    }
+
+    fun loginUser(email: String, password: String){
+        currentUser.postValue(Resource.Loading())
+        repository.login(email, password){ res, err ->
+            if(res==null){
+                currentUser.postValue(Resource.Error(err))
+            }
+            else {
+                currentUser.postValue(Resource.Success(res))
+            }
+        }
+    }
+    fun signupUser(email: String, name: String, password: String){
+        currentUser.postValue(Resource.Loading())
+        repository.signup(name, email, password){ res, err ->
+            if(res==null){
+                currentUser.postValue(Resource.Error(err))
+            }
+            else {
+                currentUser.postValue(Resource.Success(res))
+            }
+        }
+    }
     fun addNewRepoToLocal(repo: Repo){
         viewModelScope.launch(Dispatchers.IO){
             repository.addNewRepo(repo)

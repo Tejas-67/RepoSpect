@@ -6,11 +6,16 @@ import com.example.repospect.API.RetrofitInstance
 import com.example.repospect.DataModel.*
 import com.example.repospect.Database.RepoDao
 import com.example.repospect.Database.RepoDatabase
+import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
 class RepoRepository(db: RepoDatabase) {
     private val dao: RepoDao = db.getDao()
+
+    private val retrofit = RetrofitInstance
 
     var allSavedRepo: LiveData<List<Repo>> = dao.getAllRepos()
 
@@ -36,28 +41,79 @@ class RepoRepository(db: RepoDatabase) {
         return newList
     }
     suspend fun getRepoWithOwnerAndRepoName(owner: String, repoName: String): Response<Repo>{
-        return RetrofitInstance.api.getRepoUsingOwnerNameAndRepoName(owner, repoName)
+        return RetrofitInstance.githubApi.getRepoUsingOwnerNameAndRepoName(owner, repoName)
     }
     suspend fun deleteRepoFromLocal(repo: Repo){
         dao.deleteRepo(repo)
+    }
+    suspend fun loginUser(password:String, email:String): Call<User> {
+        return retrofit.loginApi.loginUser(email, password)
+    }
+
+    fun login(email: String, password: String, callback: (User?, String?)-> Unit){
+        val call = retrofit.loginApi.loginUser(email, password)
+
+        call.enqueue(object: Callback<User>{
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response.isSuccessful){
+                    val user = response.body()
+                    callback(user, null)
+                }
+                else{
+                    Log.w("auth-logs", "$response")
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    val errorMessage = errorResponse?.message?: "Unknown error"
+                    callback(null, errorMessage)
+                }
+            }
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                callback(null, "${t.message}")
+            }
+        })
+    }
+
+    fun signup(name: String, email: String, password: String, callback: (User?, String?)-> Unit){
+        val call = retrofit.loginApi.signupUser(name, email, password)
+
+        call.enqueue(object: Callback<User>{
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response.isSuccessful){
+                    val user = response.body()
+                    callback(user, null)
+                }
+                else{
+                    Log.w("auth-logs", "$response")
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    val errorMessage = errorResponse?.message?: "Unknown error"
+                    callback(null, errorMessage)
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                callback(null, "${t.message}")
+            }
+
+        })
     }
 
     suspend fun checkIfElementExists(repo: Repo){
         if(dao.checkElement(repo.pid)==null) addNewRepo(repo)
     }
     suspend fun getIssues(owner: String, name: String): Response<Issues>{
-        return RetrofitInstance.api.getIssues(owner, name)
+        return RetrofitInstance.githubApi.getIssues(owner, name)
     }
     suspend fun searchForKeyword(key: String): Response<Repositories>{
-        return RetrofitInstance.api.searchRepo(key)
+        return RetrofitInstance.githubApi.searchRepo(key)
     }
 
     suspend fun getBranches(owner: String, name: String): Response<Branches> {
-        return RetrofitInstance.api.getBranchesForRepo(owner, name)
+        return RetrofitInstance.githubApi.getBranchesForRepo(owner, name)
     }
 
     suspend fun getCommits(owner: String, name: String, branchName: String): Response<Commits>{
-        return RetrofitInstance.api.getCommits(owner, name, branchName)
+        return RetrofitInstance.githubApi.getCommits(owner, name, branchName)
     }
 
     suspend fun updateAllRepos(list: List<Repo>){

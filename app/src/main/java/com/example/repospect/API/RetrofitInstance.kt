@@ -1,5 +1,6 @@
 package com.example.repospect.API
 
+import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -8,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitInstance {
     companion object
     {
-        val retrofit by lazy {
+        val retrofitG by lazy {
             val logging = HttpLoggingInterceptor()
             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
             val client=OkHttpClient.Builder().addInterceptor(logging).build()
@@ -18,10 +19,22 @@ class RetrofitInstance {
                 .client(client)
                 .build()
         }
+        val githubApi by lazy {
+            retrofitG.create(GithubAPI::class.java)
+        }
+        val retrofitL by lazy {
+            val logging = HttpLoggingInterceptor()
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+            val client = OkHttpClient.Builder().addInterceptor(logging).build()
 
-        val api by lazy {
-            retrofit.create(GithubAPI::class.java)
+            Retrofit.Builder().baseUrl("http://10.0.2.2:3000")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
         }
 
+        val loginApi by lazy {
+            retrofitL.create(LoginAPI::class.java)
+        }
     }
 }
