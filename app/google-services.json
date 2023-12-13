@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "920783196118",
+    "project_id": "repospect",
+    "storage_bucket": "repospect.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920783196118:android:489d5fda24cddf98ab1e77",
+        "android_client_info": {
+          "package_name": "com.example.repospect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "920783196118-grj9pg8ljnafl5o0oo80r4qugq0vjk8m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.repospect",
+            "certificate_hash": "e75a8b84adca3b8ee50a1c09dc0577a22e3412e9"
+          }
+        },
+        {
+          "client_id": "920783196118-c9l6258lumfu61smlumhfcr4p5cv257s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8AjYfdfH_Y_VVbeVbS09-if8InfsbXRU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920783196118-c9l6258lumfu61smlumhfcr4p5cv257s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

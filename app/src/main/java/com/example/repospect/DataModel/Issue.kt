@@ -6,6 +6,6 @@ data class Issue(
     val node_id: String,
     val number: Int,
     val url: String,
-    val user: User,
+    val githubUser: GithubUser,
     val title: String
 )
